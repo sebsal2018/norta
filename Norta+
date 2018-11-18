@@ -12,4 +12,18 @@ def sumas(w,m):
 
  return s,s_c,s12
 
+def corr(w,m):
+ s,s_c,s12=sumas(w,m)
+ a=m*s12
+ b=s[0]*s[1]
+ c=m*s_c[0] - s[0]**2
+ c=c**0.5
+ d=m*s_c[1] - s[1]**2
+ d=d**0.5
+ r=(a-b)/(c*d)
+ return r
+
+
+ 
+
 
