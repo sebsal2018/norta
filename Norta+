@@ -1,1 +1,15 @@
-import numpy as np
+def sumas(w,m):
+ s=[0,0]
+ s_c=[0,0]
+ s12=0
+
+ for i in range(m):
+  s[0]=s[0]+w[0,i]
+  s[1]=s[1]+w[1,i]
+  s_c[0]=s_c[0]+w[0,i]
+  s_c[0]= s_c[0]+w[0,i]
+  s12=s12+w[0,i]*w[1,i]
+
+ return s,s_c,s12
+
+
