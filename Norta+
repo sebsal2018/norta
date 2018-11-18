@@ -1,41 +1,214 @@
-def sumas(w,m):
- s=[0,0]
- s_c=[0,0]
- s12=0
+import matplotlib.pyplot as plt
+import scipy.stats as std
+import numpy as np
+import scipy.linalg as lin
 
- for i in range(m):
-  s[0]=s[0]+w[0,i]
-  s[1]=s[1]+w[1,i]
-  s_c[0]=s_c[0]+w[0,i]
-  s_c[0]= s_c[0]+w[0,i]
-  s12=s12+w[0,i]*w[1,i]
+def ingresar_int(mensaje):
+    x=input(mensaje)
+    
+    try:
+        x=int(x)
+    
+    except:
+        ValueError (print("El valor no es un numero entero re ingresar"))
+        x="s"
+        
+    while type(x)==type("s"):
+        try:
+            x=input("re"+mensaje)
+            x=int(x)
+            
+        except:
+            ValueError (print("El valor no es un numero entero re ingresar"))
+            x="s"
+    
+    return x
 
- return s,s_c,s12
+def ingresar_float(mensaje):
+    x=input(mensaje)
+    
+    try:
+        x=float(x)
+    
+    except:
+        ValueError (print("El valor no es un numero re ingresar"))
+        x="s"
+        
+    while type(x)==type("s"):
+        try:
+            x=input("re"+mensaje)
+            x=int(x)
+            
+        except:
+            ValueError (print("El valor no es un numero entero re ingresar"))
+            x="s"
+    
+    return x
 
-def corr(w,m):
- s,s_c,s12=sumas(w,m)
- a=m*s12
- b=s[0]*s[1]
- c=m*s_c[0] - s[0]**2
- c=c**0.5
- d=m*s_c[1] - s[1]**2
- d=d**0.5
- r=(a-b)/(c*d)
- return r
+################################## FUNCION DE DISTRIBUCION MARGINAL ########################################
+def dist_marginal(tipo,z):
+    zf=std.norm.cdf(z)
+    #print(zf)
+    a=0.6
+    b=0.5
+    df=55
+    dfn=55
+    dfd=55
+    
+    
+    while type(tipo)!=type(1) or tipo<1 or tipo>9:
+        print("Re ingresar tipo de distribucion")
+        tipo=ingresar_int()
+    
+    if tipo==1:
+        #a=ingresar_float("Ingresar alfa: ")
+        x=std.alpha.ppf(zf,a)
+        return x
+    
+    if tipo==2:
+        #a=ingresar_float("Ingresar alfa: ")
+        #b=ingresar_float("Ingresar beta: ")
+        x=std.beta.ppf(zf,a,b)
+        return x
+    
+    if tipo==3:
+        #df=ingresar_int("Ingresar grados de libertad: ")
+        x=std.chi2.ppf(zf,df)
+        return x
+    
+    if tipo==4:
+        x=std.expon.ppf(zf)
+        return x
+    
+    if tipo==5:
+        #dfn=ingresar_int("Ingresar grados de libertad del numerador: ")
+        #dfd=ingresar_int("Ingresar grados de libertad del denominador: ")
+        x=std.f.ppf(zf,dfn,dfd)
+        return x
+    
+    if tipo==6:
+        #a=ingresar_float("Ingresar alfa: ")
+        x=std.gamma.ppf(zf,a)
+        return x
+    
+    if tipo==7:
+        x=std.norm.ppf(zf)
+        return x
+    
+    if tipo==8:
+        #df=ingresar_int("Ingresar grados de libertad: ")
+        x=std.t.ppf(zf,df)
+        return x
+    
+    if tipo==9:
+        x=std.uniform.ppf(zf)
+        return x
 
+################################## FUNCION DE RHO ########################################   
+def rho(r,w1,w2):
+    z1=w1
+    z2=[]
+
+    a=(1-r**2)**0.5
+    
+    for i in range(len(z1)):
+        y=r*z1[i]+a*w2[i]
+        z2.append(y)
+
+    x1=[]
+    x2=[]
+    px1=0
+    px2=0
+    n=0
+    d1=0
+    d2=0
+    t1=3
+    t2=7
+    
+    #t1=ingresar_int("Ingresar Distribucion marginal 1: ")
+    x1=dist_marginal(t1,z1)
+    for x in x1:
+        px1=px1+x
+    
+    #t2=ingresar_int("Ingresar Distribucion marginal 2: ")
+    x2=dist_marginal(t2,z2)
+    for x in x2:
+        px2=px2+x
+
+    px1=px1/len(z1)
+    px2=px2/len(z2)
+    #print("x1: ",px1,np.mean(x1),"\nx2: ",px2,np.mean(x2))
+    
+    for j in range(len(z1)):
+        n=n+(x1[j]-px1)*(x2[j]-px2)
+        d1=d1+(x1[j]-px1)**2
+        d2=d2+(x2[j]-px2)**2
+
+    d=(d1*d2)**0.5
+    ro=n/d
+    #ro2=(n/len(z1))/(np.std(x1)*np.std(x2)) "forma mas ramida de calcular ro "
+    return ro
+
+################################## FUNCION DE CORRELACION EMPIRICA ########################################  
+def corr_match(m,r0):
+    w1=std.norm.rvs(size=m)
+    w2=std.norm.rvs(size=m)
+    
+    
+    print(r0[0])
+    
+    if r0[0]<0:
+        l=-1
+        u=0
+    else:
+        l=0
+        u=1
+    
+    print(l,u)
+    
+    r=ro[0]
+    error=0.01*ro[0]
+    
+    ro_esti=rho(r,w1,w2)
+    
+    while abs(ro_esti-ro[0])>error:
+        if ro_esti>ro[0]:
+            u=r
+        else:
+            l=r
+        
+        r=(l+u)/2
+        
+        ro_esti=rho(r,w1,w2)
+    
+    return r
+
+def met_norta(R):
+    L=lin.cholesky(R,lower=True)
+    w=np.array(std.norm.rvs(size=k))
+    z=np.dot(L.T,w)
+    return z
+    
+
+
+################################## LLAMADA DE FUNCIONES ########################################
+
+
+k=10
 m=10000
-x=std.norm.rvs(size=m)
-y=std.norm.rvs(size=m)
-w=np.matrix(x,y)
+R=np.zeros((k,k))
+M=np.zeros((m,k))
+for i in range(m):
+    z=[rd.randrange(1000) for j in range(k)]
+    M[i,:]=z
 
-print(w.shape)
-
-rc=corr(w,m)
-rp=std.pearsonr(x,y)
-
-print(“el valor de rc= “,rc,”\nel valor de rp= “,rp)
-
-
+for i in range(k):
+    for j in range(k):
+        if i<=j:
+            R[i,j]=std.pearsonr(M[:,i],M[:,j])[0]
+        
+        if i>j:
+            R[i,j]=R[j,i]
 
 
 
