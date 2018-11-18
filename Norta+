@@ -23,7 +23,19 @@ def corr(w,m):
  r=(a-b)/(c*d)
  return r
 
+m=10000
+x=std.norm.rvs(size=m)
+y=std.norm.rvs(size=m)
+w=np.matrix(x,y)
 
- 
+print(w.shape)
+
+rc=corr(w,m)
+rp=std.pearsonr(x,y)
+
+print(“el valor de rc= “,rc,”\nel valor de rp= “,rp)
+
+
+
 
 
