@@ -231,3 +231,5 @@ else:
         while t<1 or t>9:
             t=ingresar_int(“re ingresar distribucion “+str(i+1))
         dmt.append(t)
+
+
