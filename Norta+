@@ -150,7 +150,7 @@ def rho(r,w1,w2,t1,t2):
     return ro
 
 ################################## FUNCION DE CORRELACION EMPIRICA ########################################  
-def corr_match(m,r0):
+def corr_match(m,r0,t1,t2):
     w1=std.norm.rvs(size=m)
     w2=std.norm.rvs(size=m)
     
@@ -169,7 +169,7 @@ def corr_match(m,r0):
     r=ro[0]
     error=0.01*ro[0]
     
-    ro_esti=rho(r,w1,w2)
+    ro_esti=rho(r,w1,w2,t1,t2)
     
     while abs(ro_esti-ro[0])>error:
         if ro_esti>ro[0]:
@@ -179,10 +179,12 @@ def corr_match(m,r0):
         
         r=(l+u)/2
         
-        ro_esti=rho(r,w1,w2)
+        ro_esti=rho(r,w1,w2,t1,t2)
     
     return r
 
+
+################################## FUNCION DE NORTA ########################################  
 def met_norta(R):
     L=lin.cholesky(R,lower=True)
     w=np.array(std.norm.rvs(size=k))
@@ -197,6 +199,7 @@ def met_norta(R):
 k=10
 m=10000
 R=np.zeros((k,k))
+R1=np.zeros((k,k))
 M=np.zeros((m,k))
 for i in range(m):
     z=[rd.randrange(1000) for j in range(k)]
@@ -233,3 +236,9 @@ else:
         dmt.append(t)
 
 
+for i in range(k):
+    for j in range(k):
+        if i<=j:
+            R1[i,j]= corr_match(m,R[i,j],dmt[i], dmt[j])
+        else:
+            R1[i,j]= R1[j,i]
