@@ -105,7 +105,7 @@ def dist_marginal(tipo,z):
         return x
 
 ################################## FUNCION DE RHO ########################################   
-def rho(r,w1,w2):
+def rho(r,w1,w2,t1,t2):
     z1=w1
     z2=[]
 
@@ -122,8 +122,8 @@ def rho(r,w1,w2):
     n=0
     d1=0
     d2=0
-    t1=3
-    t2=7
+    #t1=3
+    #t2=7
     
     #t1=ingresar_int("Ingresar Distribucion marginal 1: ")
     x1=dist_marginal(t1,z1)
@@ -211,4 +211,23 @@ for i in range(k):
             R[i,j]=R[j,i]
 
 
+print(“desea elegir las distribuciones marginales o que ses automaticas (random)”)
 
+print(“1: automaticas \n2: manuales”)
+
+resp=ingresae_int(“ingresar respuesta: “)
+
+While resp!=1 and resp!=2:
+    print(“respuesta no valida”)
+    resp=ingresar_int(“re ingresar respuesta”)
+
+if resp==1: 
+    dmt=[rd.randrange(9) for i in range(k)]
+else:
+    dmt=[]
+    for i in range(k):
+        print(“ingresar distribucion n° “,i+1)
+        t=ingresar_int(“ingresar distribucion “+str(i+1))
+        while t<1 or t>9:
+            t=ingresar_int(“re ingresar distribucion “+str(i+1))
+        dmt.append(t)
